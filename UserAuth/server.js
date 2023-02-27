@@ -27,5 +27,9 @@ mongoose.connect(db, {
   console.log('err :>> ', err);
 })
 
+app.get('/', (req, res) => {
+  res.send("API is live!")
+})
+
 app.use('/api/v1', api);
 module.exports = app;
