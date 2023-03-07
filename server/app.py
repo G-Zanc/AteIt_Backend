@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 import datetime
 import openai
 from dotenv import load_dotenv
@@ -10,6 +11,8 @@ path = Path('./config.env')
 load_dotenv(dotenv_path=path)
 ATLAS_URL = os.getenv('ATLAS_URI')
 app = Flask(__name__)
+cors = CORS(app, resources={r"/message": {"origins": "*"}})
+app.config['CORS_HEADERS'] = 'Content-Type'
 client = MongoClient(ATLAS_URL)
 db = client.AteIt
 users = db.users
@@ -17,6 +20,7 @@ users = db.users
 #openai.api_key = "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"
 
 @app.route('/message', methods=['POST'])
+@cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def gpt3_response():
     data = request.get_json()
     print(data)

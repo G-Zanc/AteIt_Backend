@@ -12,7 +12,9 @@ const app = express();
 const api = require('./routes')
 
 
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 require('./services/passport')
 
 app.use(morgan('dev'));
