@@ -19,6 +19,7 @@ db = client.AteIt
 users = db.users
 openai.api_key = API_KEY
 
+#MESSAGING ROUTE PLAN TO ADD CHATGPT CONNECTION, AS WELL AS FILTERING BOTS TO DETECT AND STORE PIECES OF INFORMATION
 @app.route('/message', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def gpt3_response():
