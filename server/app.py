@@ -10,14 +10,14 @@ import os
 path = Path('./config.env')
 load_dotenv(dotenv_path=path)
 ATLAS_URL = os.getenv('ATLAS_URI')
+API_KEY = os.getenv('API_KEY')
 app = Flask(__name__)
 cors = CORS(app, resources={r"/message": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 client = MongoClient(ATLAS_URL)
 db = client.AteIt
 users = db.users
-
-#openai.api_key = "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"
+openai.api_key = API_KEY
 
 @app.route('/message', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
@@ -47,7 +47,7 @@ def gpt3_response():
         return(jsonify(response))
 
 
-    '''completions = openai.Completion.create(
+    completions = openai.Completion.create(
         engine="text-davinci-002",
         prompt=prompt,
         max_tokens=1024,
@@ -55,12 +55,9 @@ def gpt3_response():
         stop=None,
         temperature=0.5,
     )
-    response = {
-        "response": completions.choices[0].text.strip()
-    }'''
 
     response = {
-        "response": "prompt: {} Response: Testing Hello World!".format(prompt),
+        "response": completions.choices[0].text.strip(),
         "date": datetime.datetime.now(),
         "byUser": False
     }
