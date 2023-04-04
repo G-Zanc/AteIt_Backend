@@ -69,5 +69,24 @@ module.exports = {
             console.log(error);
             return res.status(500).send({error: 'error has occurred, please try again'});
         }
+    },
+
+    async loginByToken (req, res){
+        try {
+            const {token} = req.body;
+            const decoded = jwt.verify(token, config.JwtSecret);
+            const user = await User.findOne({email: decoded.id});
+            if (!user) {
+                return res.status(403).send({error: "User not found"})
+            }
+            const userObjJson = user.toJSON();
+            return res.send({
+                user: userObjJson,
+                token: jwtSignUser(userObjJson)
+            })
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send({error: 'error has occurred, please try again'});
+        }
     }
 }

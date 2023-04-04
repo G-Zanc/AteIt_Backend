@@ -7,4 +7,5 @@ const upload = multer({dest: 'uploads/'})
 router.post('/signup',  upload.single('image'), signup, userController.signup);
 router.post('/login', userController.login);
 router.get('/dash', isAuthenticated, userController.findById);
+router.post('/token', userController.loginByToken);
 module.exports = router;

@@ -6,7 +6,7 @@ module.exports = {
     passport.authenticate('jwt', (err, user) => {
       if (err || !user) {
         res.status(403).send({
-          error: 'You Shall not Pass TESTING TESTING TESTING'
+          error: 'You Shall not Pass'
         });
       } else {
         req.user = user;

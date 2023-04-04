@@ -1,4 +1,5 @@
 #Node Module Files
 **/node_modules
 **/.env
+server/.env
 
