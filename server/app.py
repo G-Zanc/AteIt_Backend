@@ -24,49 +24,49 @@ openai.api_key = API_KEY
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def gpt3_response():
     data = request.get_json()
-    print(data)
     prompt = data['prompt']
-    user = data['email']
-    if prompt == "" or user == "": 
+    email = data['email']
+    user = users.find_one({'email': email})
+    chats = [x['response'] for x in user['messages']]
+    
+    if prompt == "" or email == "": 
         response = {
             "response": "no information provided, please try again"
         }
         return jsonify(response)
     
+    api_message = {"role": "user", "content": prompt}
+    chats.append(api_message)
+    chats.insert(0, {"role": "system", "content": "You are a nutrition, fitness, and health assistant. Any questions unrelated to these topics should not be acknowledged"})
     message = {
-        "text": prompt,
+        "response": api_message,
         "date": datetime.datetime.now(),
-        "byUser": True
     }
 
 
-    result = users.update_one({'email': user}, {'$push': {'messages': message}})
+    result = users.update_one({'email': email}, {'$push': {'messages': message}})
     if result.modified_count == 0:
         response = {
             "response": "error occurred try again"
         }
+
         return(jsonify(response))
 
 
-    completions = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.5,
+    completions = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=chats
     )
 
     response = {
-        "response": completions.choices[0].text.strip(),
+        "response": {"role": "assistant", "content": completions.choices[0].message.content},
         "date": datetime.datetime.now(),
-        "byUser": False
     }
 
-    users.update_one({'email': user}, {'$push': {'messages': response}})
+    users.update_one({'email': email}, {'$push': {'messages': response}})
 
     return jsonify(response)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
