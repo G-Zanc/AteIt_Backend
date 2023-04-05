@@ -29,7 +29,8 @@ def gpt3_response():
         prompt = data['prompt']
         email = data['email']
         user = users.find_one({'email': email})
-        chats = [x['response'] for x in user['messages']]
+        messages = user['messages']
+        chats = [x['response'] for x in messages[messages.length - 20:]]
         print("Got user chat history")
         if prompt == "" or email == "": 
             print("Empty prompt or incorrect email provided")
