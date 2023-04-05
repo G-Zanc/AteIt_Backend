@@ -5,6 +5,7 @@ import openai
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pathlib import Path
+from waitress import serve
 import os
 
 path = Path('./config.env')
@@ -84,4 +85,4 @@ def gpt3_response():
 
 
 if __name__ == '__main__':
-    app.run()
+    serve(app, host='0.0.0.0', port=8080)
