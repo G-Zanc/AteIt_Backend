@@ -21,6 +21,10 @@ users = db.users
 openai.api_key = API_KEY
 
 #MESSAGING ROUTE PLAN TO ADD CHATGPT CONNECTION, AS WELL AS FILTERING BOTS TO DETECT AND STORE PIECES OF INFORMATION
+@app.route('/', methods=['GET'])
+def home():
+    return "API is running"
+
 @app.route('/message', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def gpt3_response():
@@ -30,7 +34,7 @@ def gpt3_response():
         email = data['email']
         user = users.find_one({'email': email})
         messages = user['messages']
-        chats = [x['response'] for x in messages[messages.length - 20:]]
+        chats = [x['response'] for x in messages[len(messages) - 20:]]
         print("Got user chat history")
         if prompt == "" or email == "": 
             print("Empty prompt or incorrect email provided")
@@ -47,12 +51,11 @@ def gpt3_response():
             "date": datetime.datetime.now(),
         }
 
-
         result = users.update_one({'email': email}, {'$push': {'messages': message}})
         if result.modified_count == 0:
             print("Error occurred while updating user chat history")
             response = {
-                "response": "error occurred try again"
+                "response": "Error occurred while updating user chat history"
             }
 
             return(jsonify(response))
@@ -80,7 +83,7 @@ def gpt3_response():
     except Exception as e:
         print(e)
         response = {
-            "response": "error occurred try again"
+            "response": e
         }
         return(jsonify(response))
 
