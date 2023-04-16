@@ -7,6 +7,7 @@ from pymongo import MongoClient
 from pathlib import Path
 from waitress import serve
 import os
+import json
 
 path = Path('./config.env')
 load_dotenv(dotenv_path=path)
@@ -24,6 +25,25 @@ openai.api_key = API_KEY
 @app.route('/', methods=['GET'])
 def home():
     return "API is running"
+
+@app.route('/getChat', methods=['POST'])
+def getChat():
+    try:
+        data = request.get_json()
+        pageNum = data['pageNum']
+        pageSize = data['pageSize']
+        email = data['email']
+        skip = -(pageNum * pageSize + pageSize)
+        messages = users.find({'email': email}, {'messages': {'$slice': [skip, pageSize]}})
+        documents_list = [doc for doc in messages]
+        json_result = json.dumps(documents_list[0]['messages'], default=str)
+        return(json_result)
+    except Exception as e:
+        print(e)
+        response = {
+            'error': e
+        }
+        return(jsonify(response))
 
 @app.route('/message', methods=['POST'])
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
@@ -43,6 +63,7 @@ def gpt3_response():
             }
             return jsonify(response)
         
+        #FILTER RESPONSE, UNDERSTAND TYPE OF QUESTION AND CREATE CUSTOMIZED RESPONSE BASED ON REQUEST TYPE (MEAL, WORKOUT, RESEARCH, DB SEARCH, etc)
         api_message = {"role": "user", "content": prompt}
         chats.append(api_message)
         chats.insert(0, {"role": "system", "content": "You are a nutrition, fitness, and health assistant. Any questions unrelated to these topics should not be acknowledged"})
@@ -78,7 +99,7 @@ def gpt3_response():
         }
 
         users.update_one({'email': email}, {'$push': {'messages': response}})
-        print("Sending healthy response")
+        app.logger.info("Sending healthy response")
         return jsonify(response)
     except Exception as e:
         print(e)
@@ -89,4 +110,5 @@ def gpt3_response():
 
 
 if __name__ == '__main__':
+    print("Starting server")
     serve(app, host='0.0.0.0', port=8080)
