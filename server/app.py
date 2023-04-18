@@ -53,6 +53,14 @@ def gpt3_response():
         prompt = data['prompt']
         email = data['email']
         user = users.find_one({'email': email})
+        print(f'Request made by: {email}')
+        if user == None :
+            print("User not found")
+            response = {
+                "response": "User not found"
+            }
+            return jsonify(response)
+        
         messages = user['messages']
         chats = [x['response'] for x in messages[len(messages) - 20:]]
         print("Got user chat history")
