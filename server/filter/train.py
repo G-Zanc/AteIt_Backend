@@ -1,5 +1,4 @@
 import nltk
-#nltk.download('punkt')
 nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -17,7 +16,7 @@ words=[]
 classes = []
 documents = []
 
-data_file = open('intents.json').read()
+data_file = open('server/filter/intents.json').read()
 intents = json.loads(data_file)
 
 for intent in intents['intents']:
@@ -31,8 +30,7 @@ for intent in intents['intents']:
         # adding documents
         documents.append((w, intent['tag']))
 
-
-ignore_words = ['?', '!', '.']			
+ignore_words = ['?', '!', '.', ',']			
 #remove duplicates and lemmatize + lowercase all words in wordlist
 words = sorted(list(set([lemmatizer.lemmatize(w.lower()) for w in words if w not in ignore_words])))
 #remove duplicate classes
@@ -65,7 +63,6 @@ output_size = len(classes)
 #print(input_size, output_size)
 
 class ChatDataset(Dataset):
-
     def __init__(self):
         self.n_samples = len(X_train)
         self.x_data = X_train
@@ -115,19 +112,17 @@ for epoch in range(num_epochs):
     if (epoch+1) % 100 == 0:
         print (f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
-
 print(f'final loss: {loss.item():.4f}')
 
 data = {
-"model_state": model.state_dict(),
-"input_size": input_size,
-"hidden_size": hidden_size,
-"output_size": output_size,
-"words": words,
-"classes": classes
+    "model_state": model.state_dict(),
+    "input_size": input_size,
+    "hidden_size": hidden_size,
+    "output_size": output_size,
+    "words": words,
+    "classes": classes
 }
 
 FILE = "data.pth"
 torch.save(data, FILE)
-
 print(f'training complete. file saved to {FILE}')

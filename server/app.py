@@ -9,6 +9,11 @@ from waitress import serve
 import os
 import json
 
+import sys
+sys.path.append('filter/chatfunc')
+import filter.chatfunc 
+
+
 path = Path('./config.env')
 load_dotenv(dotenv_path=path)
 ATLAS_URL = os.getenv('ATLAS_URI')
@@ -49,6 +54,7 @@ def getChat():
 @cross_origin(origin='*',headers=['Content-Type','Authorization'])
 def gpt3_response():
     try:
+        print("request made!")
         data = request.get_json()
         prompt = data['prompt']
         email = data['email']
@@ -70,7 +76,7 @@ def gpt3_response():
                 "response": "no information provided, please try again"
             }
             return jsonify(response)
-        
+
         #FILTER RESPONSE, UNDERSTAND TYPE OF QUESTION AND CREATE CUSTOMIZED RESPONSE BASED ON REQUEST TYPE (MEAL, WORKOUT, RESEARCH, DB SEARCH, etc)
         api_message = {"role": "user", "content": prompt}
         chats.append(api_message)
@@ -81,13 +87,23 @@ def gpt3_response():
         }
 
         result = users.update_one({'email': email}, {'$push': {'messages': message}})
+
         if result.modified_count == 0:
             print("Error occurred while updating user chat history")
             response = {
                 "response": "Error occurred while updating user chat history"
             }
-
             return(jsonify(response))
+
+        reply = filter.chatfunc.runFilter(prompt)
+        if reply != "callGPT":
+            response = {
+            "response": {"role": "assistant", "content": reply},
+            "date": datetime.datetime.now(),
+            }
+            users.update_one({'email': email}, {'$push': {'messages': response}})
+            app.logger.info("Sending healthy response")       
+            return jsonify(response)
 
         #ADD FILTERING FOR RESPONSES
         #UNDERSTAND WHAT KIND OF REQUEST IS BEING MADE
@@ -109,6 +125,7 @@ def gpt3_response():
         users.update_one({'email': email}, {'$push': {'messages': response}})
         app.logger.info("Sending healthy response")
         return jsonify(response)
+    
     except Exception as e:
         print(e)
         response = {
@@ -119,4 +136,4 @@ def gpt3_response():
 
 if __name__ == '__main__':
     print("Starting server")
-    serve(app, host='0.0.0.0', port=8080)
+    serve(app, host='0.0.0.0', port=5000)
