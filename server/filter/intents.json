@@ -1,33 +1,27 @@
 {"intents": [
         {"tag": "greeting",
          "patterns": ["Hi there", "How are you", "Is anyone there?","Hey","Hola", "Hello", "Good day"],
-         "responses": ["Hello, thanks for asking", "Good to see you again", "Hi there, how can I help?"],
-         "context": [""]
+         "responses": ["Hello, thanks for asking.", "Good to see you again.", "Hi there, how can I help?"]
         },
         {"tag": "goodbye",
-         "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
-         "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."],
-         "context": [""]
+         "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time."],
+         "responses": ["See you!", "Have a nice day!", "Bye! Come back again soon."]
         },
         {"tag": "thanks",
          "patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
-         "responses": ["Happy to help!", "Any time!", "My pleasure"],
-         "context": [""]
+         "responses": ["Happy to help!", "Any time!", "My pleasure!"]
         },
         {"tag": "noanswer",
-         "patterns": [],
-         "responses": ["Sorry, can't understand you", "Please give me more info", "Not sure I understand"],
-         "context": [""]
+         "patterns": ["What are the largest mammals?", "What is nine times nine?", "How do octopuses swim?"],
+         "responses": ["Sorry, I haven't been built to answer that.", "Please ask me something else.", "Not sure I understand."]
         },
         {"tag": "meal",
          "patterns": ["Can you make me a meal plan?", "Make me a meal plan.", "What should I eat everyday?", "What should I be eating?", "Give me a diet plan.", "Create a diet for me.", "What did you have for breakfast?", "How many servings of fruits and vegetables should I have per day?", "How often should I eat fish?"],
-         "responses": ["You should be calling GPT here."],
-         "context": [""]
+         "responses": ["callGPT"]
         },
         {"tag": "workout",
-         "patterns": ["Can you make me an exercise routine?", "Make me an exercise routine.", "How should I workout?", "How should I exercise today?", "Give me a workout plan.", "Create a workout schedule for me.", "What time should I workout?"],
-         "responses": ["You should be calling GPT here."],
-         "context": [""]
+         "patterns": ["Can you make me an exercise routine?", "Make me an exercise routine.", "How should I workout?", "How should I exercise today?", "Give me a workout plan.", "Create a workout schedule for me.", "What time should I workout?", "Create a pull day schedule for me.", "What workout should I do for push day?", "I want to work out my back, what should I do?"],
+         "responses": ["callGPT"]
         }
 
 	]
